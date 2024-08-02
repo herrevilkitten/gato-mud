@@ -5,36 +5,58 @@ import { Room } from "./room";
 export class Item {
   id = "";
   name = "";
+  description = "";
   weight = 0;
+  value = 0;
   durability = new Pool(100);
   location?: Room | Item;
 
+  wear?: Wear;
   container?: Container;
+  weapon?: Weapon;
 
   getTotalWeight(): number {
     return (
       this.weight +
       (this.container
-        ? [...this.container.contents].reduce(
-            (prev, curr) => prev + curr.getTotalWeight(),
-            0
-          )
+        ? [...this.container.contents].reduce((prev, curr) => prev + curr.getTotalWeight(), 0)
         : 0)
     );
   }
 
-  canBePlacedIn(target: Item) {
-    if (!target.container) {
+  canContain(item: Item) {
+    if (!this.container) {
       return false;
     }
+
     let parent = this.location;
     while (parent instanceof Item) {
-      if (parent === target) {
+      if (parent === item) {
         return false;
       }
       parent = parent.location;
     }
+    if (this.container.contents.size >= this.container.maxItems) {
+      return false;
+    }
+    if (this.getTotalWeight() + item.getTotalWeight() > this.container.maxWeight) {
+      return false;
+    }
     return true;
+  }
+}
+
+export const WEAR_SLOTS = ["head", "neck", "back", "face", "eyes"] as const;
+export type WearSlot = (typeof WEAR_SLOTS)[number];
+
+export class Wear {
+  slots = new Set<WearSlot>();
+
+  overlaps(other?: Wear) {
+    if (!other) {
+      return false;
+    }
+    return [...other.slots.values()].some((value) => this.slots.has(value));
   }
 }
 
@@ -44,7 +66,7 @@ export class Container {
   maxWeight = 0;
 }
 
-export class Weapon extends Item {
+export class Weapon {
   damages: Damage[] = [];
 }
 
