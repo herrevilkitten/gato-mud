@@ -6,7 +6,7 @@ export const DIRECTIONS = [
   "east",
   "west",
   "up",
-  "dowm",
+  "down",
   "enter",
   "exit",
 ] as const;
