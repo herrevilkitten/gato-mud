@@ -1,4 +1,5 @@
 import { Damage } from "./damage";
+import { Mobile } from "./mobile";
 import { Pool } from "./pool";
 import { Room } from "./room";
 
@@ -9,7 +10,7 @@ export class Item {
   weight = 0;
   value = 0;
   durability = new Pool(100);
-  location?: Room | Item;
+  location?: Room | Item | Mobile;
 
   wear?: Wear;
   container?: Container;
@@ -57,6 +58,25 @@ export class Wear {
       return false;
     }
     return [...other.slots.values()].some((value) => this.slots.has(value));
+  }
+}
+
+export class Contents extends Set<Item> {
+  weight = 0;
+
+  add(item: Item): this {
+    if (!this.has(item)) {
+      this.weight = this.weight + item.getTotalWeight();
+    }
+    return super.add(item);
+  }
+
+  delete(value: Item): boolean {
+    const result = super.delete(value);
+    if (result) {
+      this.weight = this.weight - value.getTotalWeight();
+    }
+    return result;
   }
 }
 

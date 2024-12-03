@@ -1,0 +1,22 @@
+{
+  id: "starter-area",
+  name: "Starter Area",
+  rooms: {
+    "starter-room": {
+      name: "Starter Room",
+      exits: {
+        direction: "north",
+        to: "starter-room-2",
+      },
+    },
+    "starter-room-2": {
+      name: "Starter Room 2",
+      exits: [
+        {
+          direction: "south",
+          to: "starter-room-1",
+        },
+      ],
+    },
+  },
+}
